@@ -218,3 +218,54 @@ TODO: how does that work ... why is credentials not part of 'servers'?
 ** alwaysUseMBeans
 +
 > if false MXBeans will be used rather than standard MBeans.
+
+
+== REST API
+
+In LiveOak resources are structured in a very simple way. Each application gets its namespace under root. It further partitions this namespace to subcontexts where each subcontext is handled by a resource registered to that subcontext.
+
+Following the configuration example above, Mongo root endpoint is available at /APP_NAME/data.
+
+Let's assume our application name is demo-app, and is deployed to a LiveOak server running on localhost. We can then access it at:
+
+http://localhost:8080/demo-app/data
+
+We'll refer to this as 'Mongo endpoint'.
+
+We use 'curl' in the examples below. For brewity some non-essential parameters are left out, but may under some circumstances be required - depending on application configuration.
+
+Specifically, it may be necessary to use
+
+        -H 'Content-Type: application/json'
+
+when performing POST / PUT operations.
+
+And it may sometimes be necessary to use
+
+        -H 'Accept: application/json'
+
+
+== Listing collections
+
+GET http://localhost:8080/demo-app/data
+
+    $ curl http://localhost:8080/demo-app/data
+
+    {
+      "id" : "data",
+      "self" : {
+        "href" : "/demo-app/data"
+      },
+      "type" : "database",
+      "count" : 0
+    }
+
+All resources contain at least an 'id' field, and a 'self' field containing an 'href'. The first one is a convenience, since the self/href already uniquely identifies a resource.
+
+Collection resources contain a 'count' field, which returns a number of children. In this case there are no children, as there are no collections yet.
+
+The 'type' field helps tools determine the contract to use when communicating with this REST endpoint.
+
+If some collections were already present in the database, then we would also receive a 'members' field listing the child items.
+
+
