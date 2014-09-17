@@ -9,7 +9,7 @@ Mongo module provides REST API to underlying MongoDB.
 
 == Features
 
-Mongo module provides a REST endpoint that exposes the data (JSON documents in collections), and the meta data (additional collection settings) in a JSON format, providing CRUD and querying support.
+Mongo module provides a REST endpoint that exposes the data (JSON documents in collections), and the meta data (collections and their settings) in a JSON format, providing CRUD and querying support.
 
 JSON documents can also refer to other JSON documents using resource references, and it's possible to expand such resource references and retrieve them nested within original JSON document.
 
@@ -66,7 +66,7 @@ The available configuration options are:
   ],
   credentials: [
     {
-      mechanism: 'mongodb-cr',
+      mechanism: 'MONGODB-CR',
       username: 'test',
       password: 'test',
       database: 'test'
@@ -104,6 +104,38 @@ The available configuration options are:
 ----
 
 TODO make naming of properties consistent: write-concern, read-preference, mongo-client-options
+
+* db
++
+> MongoDB database name
+
+* servers
++
+> list of servers in the replica set, each server identified with a host, and a port.
+
+* credentials
++
+> list of credentials for connecting to the server - only required if authentication is configured on the servers
+
+** mechanism
++
+> authentication mechanism to use. Possible values are 'MONGODB-CR', and 'GSSAPI'
+
+** username
++
+> a login / username to use
+
+** password
++
+> a password to authenticate with - only used when mechanism is MONGODB-CR
+
+** database
++
+> database where user is defined - only used when mechanism is MONGODB-CR
+
+TODO: how does that work ... why is credentials not part of 'servers'?
+
+
 
 * WriteConcern
 +
