@@ -1,1 +1,49 @@
+= Mongo Resource
+:awestruct-layout: two-column
+:toc:
+:toc-placement!:
 
+toc::[]
+
+Mongo module provides REST API to underlying MongoDB.
+
+== Features
+
+Mongo module provides a REST endpoint that exposes the data (JSON documents in collections), and the meta data (additional collection settings) in a JSON format, providing a full CRUD support.
+
+JSON documents can also refer to other JSON documents using resource references, and it's possible to expand such resource references an return them nested within original JSON document.
+
+Using 'fields' url query parameter client can <<controlling-which-fields-to-return,control which fields to return>>, and how deep to expand object hierarchies.
+
+Client can use 'sort' query parameter for <<sorting,sorting results>>, and 'offset', and 'limit' query parameters for <<pagination,pagination>>.
+
+Using 'q' url query parameter a query can be passed in a http://docs.mongodb.org/manual/reference/operator/query[Mongo DB JSON query syntax] to perform <<querying,querying>>.
+
+There is also a special '_aggregate' collection endpoint for <<performing-aggregating-queries,performing aggregating queries>> on collections.
+
+== Configuration
+
+Mongo service is automatically made available to applications through extensions mechanism.
+
+There is a file mongo.json in $LIVEOAK_HOME/conf/extensions directory which triggers installation of MongoExtension.
+
+
+To make use of the extension, an application has to configure a resource of type 'mongo' in its application.json file e.g.:
+
+[source,json]
+----
+{
+  resources: {
+    data: {
+      type: 'mongo',
+      config: {
+        server: 'localhost',
+        port: 5432,
+        db: 'test',
+        user: 'test',
+        password: 'test',
+        schemas: 'test'
+      }
+    }
+  }
+}
