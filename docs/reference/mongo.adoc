@@ -9,9 +9,9 @@ Mongo module provides REST API to underlying MongoDB.
 
 == Features
 
-Mongo module provides a REST endpoint that exposes the data (JSON documents in collections), and the meta data (additional collection settings) in a JSON format, providing a full CRUD support.
+Mongo module provides a REST endpoint that exposes the data (JSON documents in collections), and the meta data (additional collection settings) in a JSON format, providing CRUD and querying support.
 
-JSON documents can also refer to other JSON documents using resource references, and it's possible to expand such resource references an return them nested within original JSON document.
+JSON documents can also refer to other JSON documents using resource references, and it's possible to expand such resource references and retrieve them nested within original JSON document.
 
 Using 'fields' url query parameter client can <<controlling-which-fields-to-return,control which fields to return>>, and how deep to expand object hierarchies.
 
@@ -37,13 +37,143 @@ To make use of the extension, an application has to configure a resource of type
     data: {
       type: 'mongo',
       config: {
-        server: 'localhost',
-        port: 5432,
         db: 'test',
-        user: 'test',
-        password: 'test',
-        schemas: 'test'
+        servers: [
+          {
+            host: 'localhost',
+            port: 5432
+          }
+        ]
       }
     }
   }
 }
+----
+
+In this case we bind a new 'mongo' resource to /APP_NAME/data endpoint, where APP_NAME is the name of our application.
+
+The available configuration options are:
+
+[source,json]
+----
+{
+  db: 'test',
+  servers: [
+    {
+      host: 'localhost',
+      port: 5432
+    }
+  ],
+  credentials: [
+    {
+      mechanism: 'mongodb-cr',
+      username: 'test',
+      password: 'test',
+      database: 'test'
+    }
+  ],
+  WriteConcern: {
+    w: 1,
+    wTimeout: 10000,
+    j: true,
+    fsync: true,
+    continueOnErrorForInsert: false
+  },
+  ReadPreference: {
+    type: 'primary',
+    tags: {
+      tag1: 'value1'
+    },
+    tags: {
+      tag2: 'value2'
+    }
+  },
+  MongoClientOptions: {
+    description: '${APP_NAME}',
+    connectionsPerHost: 100,
+    threadsAllowedToBlockForConnectionMultiplier: 5,
+    maxWaitTime: 120000,
+    connectTimeout: 10000,
+    socketKeepAlive: false,
+    autoConnectRetry: false,
+    maxAutoConnectRetryTime: 0,
+    cursorFinalizerEnabled: true,
+    alwaysUseMBeans: false
+  }
+}
+----
+
+TODO make naming of properties consistent: write-concern, read-preference, mongo-client-options
+
+* WriteConcern
+** w
++
+> write acknowledgement (default value is 1)
++
+> * -1 ... don't even report network errors
+> *  0 ... don't wait for acknowledgement from the server
+> *  1 ... wait for acknowledgement, but don't wait for secondaries to replicate
+> * 2+ ... wait for one or more secondaries to also acknowledge
+
+** wTimeout
++
+> timeout for write operation - how long to wait for slaves before failing (default value is 10000)
++
+> * 0 ... indefinite
+> * greater than 0: number of ms to wait
+
+** j
++
+> wait for group commit to journal (default value is true)
+
+** fsync
++
+> perform native OS sync to disk (default value is true)
+
+** continueOnErrorForInsert
++
+> should batch operations continue or fail fast if error occurs (default value is false)
+
+* ReadPreference
+** type
++
+> type value can be one of:
++
+> * primary
+> * secondary
+> * secondaryPreferred
+> * primaryPreferred
+> * nearest
+
+
+* MongoClientOptions  
+** description
++
+> name to be used for logging and jmx
+** connectionsPerHost
++
+> The maximum number of pooled connections allowed per host for this MongoClient instance.
+** threadsAllowedToBlockForConnectionMultiplier
++
+> a multiplier ... when multiplied with the connectionsPerHost setting, gives the maximum number of threads that may be waiting for a connection to become available from the pool
+** maxWaitTime
++
+> The maximum wait time in milliseconds that a thread may wait for a connection to become available - value of 0 means don't wait, -1 means wait indefinitely
+** connectTimeout
++
+> The connect timeout in milliseconds.  A value of 0 means no timeout.
+** socketKeepAlive
++
+> This flag controls the socket keep alive feature that keeps a connection alive through firewalls. Default value is 'false'
+** autoConnectRetry
++ 
+> if value is true, then in case a connection can't be established the client will try to reconnect
+** maxAutoConnectRetryTime
++
+> if value is greater than 0, and autoConnectRetry is true that is the timeout value for trying to reconnect. If value is 0 the default reconnect timeout of 15s is used
+** cursorFinalizerEnabled
++
+> it true finalize() method on DBCursor is used to clean up any unclosed cursors
+** alwaysUseMBeans
++
+> if false MXBeans will be used rather than standard MBeans.
