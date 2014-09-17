@@ -80,7 +80,7 @@ The available configuration options are:
     continueOnErrorForInsert: false
   },
   ReadPreference: {
-    type: 'primary',
+    type: 'primaryPreferred',
     tags: {
       tag1: 'value1'
     },
@@ -106,6 +106,9 @@ The available configuration options are:
 TODO make naming of properties consistent: write-concern, read-preference, mongo-client-options
 
 * WriteConcern
++
+> set of properties that control behavior of write operations
++
 ** w
 +
 > write acknowledgement (default value is 1)
@@ -135,6 +138,9 @@ TODO make naming of properties consistent: write-concern, read-preference, mongo
 > should batch operations continue or fail fast if error occurs (default value is false)
 
 * ReadPreference
++
+> set of properties that control behavior of read operations - preferred replica set members to which a query or command can be sent
++
 ** type
 +
 > type value can be one of:
@@ -145,6 +151,9 @@ TODO make naming of properties consistent: write-concern, read-preference, mongo
 > * primaryPreferred
 > * nearest
 
+** tags
++
+> a key value pair representing a tag, and its value as a discriminator for identifying secondary replica set members
 
 * MongoClientOptions  
 ** description
