@@ -249,16 +249,17 @@ And it may sometimes be necessary to use
 
 GET http://localhost:8080/demo-app/data
 
-    $ curl http://localhost:8080/demo-app/data
-
-    {
-      "id" : "data",
-      "self" : {
-        "href" : "/demo-app/data"
-      },
-      "type" : "database",
-      "count" : 0
-    }
+----
+$ curl http://localhost:8080/demo-app/data
+{
+  "id" : "data",
+  "self" : {
+    "href" : "/demo-app/data"
+  },
+  "type" : "database",
+  "count" : 0
+}
+----
 
 All resources contain at least an 'id' field, and a 'self' field containing an 'href'. The first one is a convenience, since the self/href already uniquely identifies a resource.
 
@@ -270,25 +271,28 @@ If some collections were already present in the database, then we would also rec
 
 For example we might receive:
 
-    {
-      "id" : "data",
-      "self" : {
-        "href" : "/demo-app/data"
-      },
-      "type" : "database",
-      "count" : 2,
-      "members" : [ {
-        "id" : "rooms",
-        "self" : {
-          "href" : "/demo-app/data/rooms"
-        }
-      }, {
-        "id" : "users",
-        "self" : {
-          "href" : "/demo-app/data/users"
-        }
-      } ]
+[source,json]
+----
+{
+  "id" : "data",
+  "self" : {
+    "href" : "/demo-app/data"
+  },
+  "type" : "database",
+  "count" : 2,
+  "members" : [ {
+    "id" : "rooms",
+    "self" : {
+      "href" : "/demo-app/data/rooms"
     }
+  }, {
+    "id" : "users",
+    "self" : {
+      "href" : "/demo-app/data/users"
+    }
+  } ]
+}
+----
 
 For children we only receive object stubs with identity information.
 
@@ -298,23 +302,41 @@ To create a new collection we POST a JSON message describing the collection to M
 
 POST http://localhost:8080/demo-app/data
 
-    curl -X POST -H "Content-Type: application/json" http://localhost:8080/demo-app/data -T - << EOF
-    {
-      "id" : "users"
-    }
-    EOF
+----
+$ curl -X POST -H "Content-Type: application/json" http://localhost:8080/demo-app/data -T - << EOF
+{
+  "id" : "users"
+}
+EOF
+----
 
 All we have to specify is the name of the new collection as a resource id.
 
-We can specify additional meta info for the new collection: 
+We get back a JSON describing the created collection:
+[source,json]
+----
+{
+  "id" : "users",
+  "self" : {
+    "href" : "/demo-app/data/users"
+  },
+  "type" : "collection",
+  "count" : 0,
+  "capped" : false
+}
+----
 
-    {
-      "id" : "users",
-      "capped" : true,
-      "size" : 1000,
-      "max" : 100000,
-      "autoIndexId" : true
-    }
+We can specify additional meta info for the new collection: 
+[source,json]
+----
+{
+  "id" : "users",
+  "capped" : true,
+  "size" : 1000,
+  "max" : 100000,
+  "autoIndexId" : true
+}
+----
 
 The meaning of these properties is as follows:
 
