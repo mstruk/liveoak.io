@@ -111,7 +111,7 @@ TODO make naming of properties consistent: write-concern, read-preference, mongo
 
 * servers
 +
-> list of servers in the replica set, each server identified with a host, and a port.
+> list of servers in the http://docs.mongodb.org/manual/replication[replica set], each server identified with a host, and a port.
 
 * credentials
 +
@@ -268,4 +268,66 @@ The 'type' field helps tools determine the contract to use when communicating wi
 
 If some collections were already present in the database, then we would also receive a 'members' field listing the child items.
 
+For example we might receive:
+
+    {
+      "id" : "data",
+      "self" : {
+        "href" : "/demo-app/data"
+      },
+      "type" : "database",
+      "count" : 2,
+      "members" : [ {
+        "id" : "rooms",
+        "self" : {
+          "href" : "/demo-app/data/rooms"
+        }
+      }, {
+        "id" : "users",
+        "self" : {
+          "href" : "/demo-app/data/users"
+        }
+      } ]
+    }
+
+For children we only receive object stubs with identity information.
+
+== Creating a collection
+
+To create a new collection we POST a JSON message describing the collection to Mongo endpoint.
+
+POST http://localhost:8080/demo-app/data
+
+    curl -X POST -H "Content-Type: application/json" http://localhost:8080/demo-app/data -T - << EOF
+    {
+      "id" : "users"
+    }
+    EOF
+
+All we have to specify is the name of the new collection as a resource id.
+
+We can specify additional meta info for the new collection: 
+
+    {
+      "id" : "users",
+      "capped" : true,
+      "size" : 1000,
+      "max" : 100000,
+      "autoIndexId" : true
+    }
+
+The meaning of these properties is as follows:
+
+* capped 
++
+> if the collection is capped (default value is false) - see http://docs.mongodb.org/manual/core/capped-collections[Capped Collections]
+* size
++
+> collection size limit for capped collection in bytes (required for capped collections)
+* max
++
+> max number of documents limit for capped collection
+* autoIndexId
++
+> if unique index should automatically be created for _id column of a capped collection. Required to ensure uniqueness across databases in a replica set. Prior to MongoDB version 2.2 the default for this was false, since version 2.2 it is true.
 
